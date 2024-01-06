@@ -44,12 +44,12 @@ export async function POST(req: Request) {
     const user = JSON.parse(userRaw) as User;
     const friend = JSON.parse(friendRaw) as User;
     // notify added user
-    await pusherServer.trigger(
+     pusherServer.trigger(
       toPusherKey(`user:${idToAdd}:friends`),
       "new_friend",
       user
     );
-    await pusherServer.trigger(
+     pusherServer.trigger(
       toPusherKey(`user:${session.user.id}:friends`),
       "new_friend",friend
     );
