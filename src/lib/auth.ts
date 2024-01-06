@@ -5,11 +5,13 @@ import GoogleProvider from "next-auth/providers/google";
 import { fetchRedis } from "@/helpers/redis";
 
 function getGoogleCredentials() {
-  const clientId= process.env.GOOGLE_CLIENT_ID;
-  const clientSecret= process.env.GOOGLE_CLIENT_SECRET;
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
   if (!clientId || clientId.length === 0) {
     throw new Error("Missing GOOGLE_CLIENT_ID");
   }
+
   if (!clientSecret || clientSecret.length === 0) {
     throw new Error("Missing GOOGLE_CLIENT_SECRET");
   }
@@ -22,6 +24,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+
   pages: {
     signIn: "/login",
   },
@@ -32,20 +35,27 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      console.log("Token:", token);
-      const dbUserResult = (await fetchRedis("get", `user:${token.id}`)) as string | null;
+     async jwt({ token, user }) {
+      const dbUserResult = (await fetchRedis("get", `user:${token.id}`)) as
+        | string
+        | null;
 
       if (!dbUserResult) {
-        token.id = user!.id;
+        if (user) {
+          token.id = user!.id;
+        }
+
         return token;
       }
-      const dbUser = JSON.parse(dbUserResult) as User
+
+      const dbUser = JSON.parse(dbUserResult) as User;
+
       return {
+        ...token,
         id: dbUser.id,
         name: dbUser.name,
         email: dbUser.email,
-        image: dbUser.image,
+        picture: dbUser.image,
       };
     },
     async session({ session, token }) {
@@ -53,8 +63,9 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.name = token.name;
         session.user.email = token.email;
-        session.user.image = token.image;
+        session.user.image = token.picture;
       }
+
       return session;
     },
     redirect() {

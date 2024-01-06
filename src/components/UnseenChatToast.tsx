@@ -7,7 +7,7 @@ interface UnseenChatToastProps {
   t: Toast;
   senderId: string;
   sessionId: string;
-  senderImag: string;
+  senderImage: string;
   senderName : string;
   senderMessage : string;
 }
@@ -16,7 +16,7 @@ const UnseenChatToast: FC<UnseenChatToastProps> = ({
   t,
   sessionId,
   senderId,
-  senderImag,
+  senderImage,
   senderName,
   senderMessage
 }) => {
@@ -42,7 +42,7 @@ const UnseenChatToast: FC<UnseenChatToastProps> = ({
                 fill
                 referrerPolicy="no-referrer"
                 className="rounded-full"
-                src={senderImag}
+                src={senderImage}
                 alt={`${senderName} profile picture`}
               />
             </div>

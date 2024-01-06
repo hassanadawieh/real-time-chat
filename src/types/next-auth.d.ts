@@ -1,17 +1,17 @@
 import type { Session , User} from "next-auth";
-import type {JWT} 
+import type {JWT} from "next-auth/jwt"
 
 type UserId = string
 
 declare module 'next-auth/jwt' {
     interface JWT {
-        id:UserId
+        id:UserId 
     }
 }
 
 declare module 'next-auth' {
     interface Session {
-        user:user & {
+        user:User & {
             id:UserId
         }
     }

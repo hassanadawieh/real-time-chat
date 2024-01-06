@@ -2,11 +2,9 @@
 import { pusherClient } from "@/lib/pusher";
 import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import Pusher from "pusher";
 import { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import UnseenChatToast from "./UnseenChatToast";
-import { sendError } from "next/dist/server/api-utils";
 
 interface SidebarChatListProps {
   friends: User[];
@@ -14,8 +12,8 @@ interface SidebarChatListProps {
 }
 
 interface ExtendedMessage extends Message {
-  senderImag : string
-  senderName : string
+  senderImage: string;
+  senderName: string;
 }
 
 const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
@@ -27,33 +25,42 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`));
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
 
+    const chatHandler = (message: ExtendedMessage) => {
+      const shouldNotify =
+        pathname !==
+        `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`;
 
-    const chatHandler = (message : ExtendedMessage) => {
-    const shouldNotify = pathname !== `/dashboard/chat/${chatHrefConstructor(sessionId , message.senderId)}`
+      if (!shouldNotify) return;
 
-    if(!shouldNotify) return
-
-    // should be notify
-
-    toast.custom((t) => (
-
-      //custom component
-      <UnseenChatToast senderId={message.senderId} sessionId={sessionId} senderImag={message.senderImag} t={t} senderMessage={message.text} senderName={message.senderName}  />
-    ))
-    setUnseenMessages((prev) => [...prev , message])
-    }
+      // should be notify
+      toast.custom((t) => (
+        //custom component
+        <UnseenChatToast
+          senderId={message.senderId}
+          sessionId={sessionId}
+          senderImage={message.senderImage}
+          t={t}
+          senderMessage={message.text}
+          senderName={message.senderName}
+        />
+      ));
+      setUnseenMessages((prev) => [...prev, message]);
+    };
 
     const newFriendHandler = () => {
-      router.refresh()
-    }
+      router.refresh();
+    };
 
-    pusherClient.bind('new_message' , chatHandler);
-    pusherClient.bind('new_friend', newFriendHandler);
+    pusherClient.bind("new_message", chatHandler);
+    pusherClient.bind("new_friend", newFriendHandler);
     return () => {
       pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`));
       pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`));
+
+      pusherClient.unbind("new_message", chatHandler);
+      pusherClient.unbind("new_friend", newFriendHandler);
     };
-  }, [pathname , sessionId , router]);
+  }, [pathname, sessionId, router]);
 
   useEffect(() => {
     if (pathname?.includes("chat")) {
@@ -62,7 +69,6 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
       });
     }
   }, [pathname]);
-  console.log(friends);
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
       {friends.sort().map((friend) => {
@@ -70,17 +76,17 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
           return unseenMessage.senderId === friend.id;
         }).length;
         return (
-          <li key={friend.id}>
+          <li key={friend.id.toString()}>
             <a
               href={`/dashboard/chat/${chatHrefConstructor(
                 sessionId,
-                friend.id
+                friend.id.toString()
               )}`}
               className="text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold"
             >
               {friend.name}
               {unseenMessagesCount > 0 && (
-                <div className="bg-indigo-600 font-medium text-xs text-white w-4 h-4 rounded-full flex justify-center items-center"></div>
+                <div className="bg-indigo-600 font-medium text-xs text-white w-4 h-4 rounded-full flex justify-center items-center">{unseenMessagesCount}</div>
               )}
             </a>
           </li>

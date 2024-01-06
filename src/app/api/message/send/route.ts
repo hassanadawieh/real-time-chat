@@ -45,6 +45,7 @@ export async function POST(req: Request) {
       id: nanoid(),
       senderId: session.user.id,
       text,
+      receiverId : friendId,
       timestamp,
     };
 

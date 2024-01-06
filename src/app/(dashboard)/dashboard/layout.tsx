@@ -10,17 +10,18 @@ import FriendRequestSidebarOptions from "@/components/FriendRequestSidebarOption
 import { fetchRedis } from "@/helpers/redis";
 import { getFriendsByUserId } from "@/helpers/get-friends-by-user-id";
 import SidebarChatList from "@/components/SidebarChatList";
+import MobileChatLayout from "@/components/MobileChatLayout";
 interface LayoutProps {
   children: ReactNode;
 }
 
-interface SideBarOptions {
+interface SidebarOptions {
   id: number;
   name: string;
   href: string;
   Icon: Icon;
 }
-const sideBarOptions: SideBarOptions[] = [
+const sidebarOptions: SidebarOptions[] = [
   {
     id: 1,
     name: "Add friend",
@@ -32,7 +33,7 @@ const sideBarOptions: SideBarOptions[] = [
 const Layout = async ({ children }: LayoutProps) => {
   const session = await getServerSession(authOptions);
   if (!session) notFound();
-  const unssenRequestCount = (
+  const unseenRequestCount = (
     (await fetchRedis(
       "smembers",
       `user:${session.user.id}:incoming_friend_requests`
@@ -42,7 +43,10 @@ const Layout = async ({ children }: LayoutProps) => {
   const friends = await getFriendsByUserId(session.user.id);
   return (
     <div className="w-full flex h-screen">
-      <div className="flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-auto border-r border-gray-200 bg-white px-6">
+      <div className="md:hidden">
+     <MobileChatLayout friends={friends} session={session} sidebarOptions={sidebarOptions} unseenRequestCount={unseenRequestCount} />
+      </div>
+      <div className="hidden md:flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-auto border-r border-gray-200 bg-white px-6">
         <Link href="/dashboard" className="flex h-16 shrink-0 items-center">
           <Icons.Logo className="h-8  w-auto text-indigo-600" />
         </Link>
@@ -60,7 +64,7 @@ const Layout = async ({ children }: LayoutProps) => {
               </div>
 
               <ul role="list" className="-mx-2 mt-2 space-y-1">
-                {sideBarOptions.map((option) => {
+                {sidebarOptions.map((option) => {
                   const Icon = Icons[option.Icon];
                   return (
                     <li key={option.id}>
@@ -79,7 +83,7 @@ const Layout = async ({ children }: LayoutProps) => {
                 <li>
                   <FriendRequestSidebarOptions
                     sessionId={session.user.id}
-                    initialUnssenRequestCount={unssenRequestCount}
+                    initialUnseenRequestCount={unseenRequestCount}
                   />
                 </li>
               </ul>

@@ -58,13 +58,13 @@ const page = async ({ params }: PageProps) => {
               <Image
                 fill
                 referrerPolicy="no-referrer"
-                src={chatPartner.image}
+                src={chatPartner.image.toString()}
                 alt={`${chatPartner.name} profile picture`}
                 className="rounded-full"
               />
             </div>
           </div>
-          <div className="flexx flex-col leading-tight">
+          <div className="flex flex-col leading-tight">
             <div className="text-xl flex items-center">
               <span className="text-gray-700 mr-3 font-semibold">{chatPartner.name}</span>
             </div>

@@ -8,32 +8,47 @@ import { toPusherKey } from "@/lib/utils";
 
 interface FriendRequestSidebarOptionsProps {
   sessionId : string
-  initialUnssenRequestCount : number
+  initialUnseenRequestCount : number
 }
 
 const FriendRequestSidebarOptions: FC<FriendRequestSidebarOptionsProps> = ({
   sessionId,
-  initialUnssenRequestCount,
+  initialUnseenRequestCount,
 }) => {
-  const [unssenRequestCount, setUnssenRequestCount] = useState<number>(
-    initialUnssenRequestCount
+  const [unseenRequestCount, setUnseenRequestCount] = useState<number>(
+    initialUnseenRequestCount
   );
 
+
   useEffect(() => {
-  pusherClient.subscribe(
+    pusherClient.subscribe(
       toPusherKey(`user:${sessionId}:incoming_friend_requests`)
     );
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
+
     const friendRequestHandler = () => {
-    setUnssenRequestCount((prev) => prev + 1)
-    }
-    pusherClient.bind("incoming_friend_requests" , friendRequestHandler);
+      setUnseenRequestCount((prev) => prev + 1);
+    };
+
+    const addedFriendHandler = () => {
+      setUnseenRequestCount((prev) => prev - 1);
+    };
+
+    pusherClient.bind("incoming_friend_requests", friendRequestHandler);
+    pusherClient.bind("new_friend", addedFriendHandler);
+
     return () => {
       pusherClient.unsubscribe(
         toPusherKey(`user:${sessionId}:incoming_friend_requests`)
       );
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`));
+
+      pusherClient.unbind("new_friend", addedFriendHandler);
       pusherClient.unbind("incoming_friend_requests", friendRequestHandler);
-    }
-  },[sessionId])
+    };
+  }, [sessionId]);
+
+  
   return (
     <Link
       href="/dashboard/requests"
@@ -43,9 +58,9 @@ const FriendRequestSidebarOptions: FC<FriendRequestSidebarOptionsProps> = ({
         <User className="h-4 w-4" />
       </div>
       <p className="truncate"> Friend requests</p>
-      {unssenRequestCount > 0 ? (
+      {unseenRequestCount > 0 ? (
         <div className="rounded-full w-5 h-5 text-xs flex justify-center items-center text-white bg-indigo-600">
-          {unssenRequestCount}
+          {unseenRequestCount}
         </div>
       ): null}
     </Link>
