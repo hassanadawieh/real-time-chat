@@ -52,14 +52,14 @@ export async function POST(req: Request) {
     const message = messageValidator.parse(messageData)
 
     // notify all connected chat room clients
-    pusherServer.trigger(toPusherKey(`chat:${chatId}`), 'incoming_message' , message)
+    // pusherServer.trigger(toPusherKey(`chat:${chatId}`), 'incoming_message' , message)
     
-    pusherServer.trigger(toPusherKey(`user:${friendId}:chats`) , 'new_message',{
-      ...message, 
-      senderImage : sender.image,
-      senderName : sender.name,
+    // pusherServer.trigger(toPusherKey(`user:${friendId}:chats`) , 'new_message',{
+    //   ...message, 
+    //   senderImage : sender.image,
+    //   senderName : sender.name,
 
-    })
+    // })
 
     // all valid, send the message
     await db.zadd(`chat:${chatId}:messages`, {
