@@ -20,11 +20,15 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [unseenMessages, setUnseenMessages] = useState<Message[]>([]);
+  const [activeChats , setActiveChats] = useState<User[]>([]);
 
   useEffect(() => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`));
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
-
+    
+    const newFriendHanler = (newFriend: User) => {
+      setActiveChats((prev) => [...prev, newFriend])
+    }
     const chatHandler = (message: ExtendedMessage) => {
       const shouldNotify =
         pathname !==
@@ -71,7 +75,7 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
   }, [pathname]);
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
-      {friends.sort().map((friend) => {
+      {activeChats.sort().map((friend) => {
         const unseenMessagesCount = unseenMessages.filter((unseenMessage) => {
           return unseenMessage.senderId === friend.id;
         }).length;
@@ -86,7 +90,9 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
             >
               {friend.name}
               {unseenMessagesCount > 0 && (
-                <div className="bg-indigo-600 font-medium text-xs text-white w-4 h-4 rounded-full flex justify-center items-center">{unseenMessagesCount}</div>
+                <div className="bg-indigo-600 font-medium text-xs text-white w-4 h-4 rounded-full flex justify-center items-center">
+                  {unseenMessagesCount}
+                </div>
               )}
             </a>
           </li>
