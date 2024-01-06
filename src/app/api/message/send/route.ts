@@ -74,3 +74,4 @@ export async function POST(req: Request) {
     return new Response('Internal server error' , {status:500})
   }
 }
+export const revalidate = 0;

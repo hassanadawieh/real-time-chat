@@ -26,9 +26,9 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`));
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
     
-    const newFriendHanler = (newFriend: User) => {
-      setActiveChats((prev) => [...prev, newFriend])
-    }
+    // const newFriendHanler = (newFriend: User) => {
+    //   setActiveChats((prev) => [...prev, newFriend])
+    // }
     const chatHandler = (message: ExtendedMessage) => {
       const shouldNotify =
         pathname !==
@@ -75,7 +75,7 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }) => {
   }, [pathname]);
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
-      {activeChats.sort().map((friend) => {
+      {friends.sort().map((friend) => {
         const unseenMessagesCount = unseenMessages.filter((unseenMessage) => {
           return unseenMessage.senderId === friend.id;
         }).length;

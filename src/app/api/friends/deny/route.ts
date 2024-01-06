@@ -25,3 +25,4 @@ export async function POST(req: Request) {
     return new Response("Invalid request", { status: 400 });
   }
 }
+export const revalidate = 0;
