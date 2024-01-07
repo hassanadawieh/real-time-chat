@@ -26,6 +26,7 @@ export async function POST(req: Request) {
       'smembers',
       `user:${session.user.id}:friends`
     )) as string[]
+  console.log(friendList , "from the server")
     const isFriend = friendList.includes(friendId)
 
     if (!isFriend) {
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
 
     // notify all connected chat room clients
     await pusherServer.trigger(toPusherKey(`chat:${chatId}`), 'incoming_message', message)
-
+    console.log(message , "from the server,{pusher here}")
     await pusherServer.trigger(toPusherKey(`user:${friendId}:chats`), 'new_message', {
       ...message,
       senderImg: sender.image,
