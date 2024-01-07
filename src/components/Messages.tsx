@@ -22,16 +22,18 @@ const Messages: FC<MessagesProps> = ({
   const [messages, setMessages] = useState<Message[]>(initialMessages);
 
   useEffect(() => {
+    console.log(chatId , "from the client")
     pusherClient.subscribe(toPusherKey(`chat:${chatId}`));
     const messageHandler = (message: Message) => {
       setMessages((prev) => [message, ...prev]);
     };
+    console.log("pusher is working from the client");
     pusherClient.bind("incoming_message", messageHandler);
     return () => {
     pusherClient.unsubscribe(toPusherKey(`chat:${chatId}`));
     pusherClient.unbind("incoming_message", messageHandler);
     };
-  }, [chatId]);
+  }, [chatId , messages]);
 
   const scrollDownRef = useRef<HTMLDivElement | null>(null);
 
