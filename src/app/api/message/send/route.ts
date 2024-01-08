@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       message
     );
     console.log("message , from the server");
-     pusherServer.trigger(toPusherKey(`user:${friendId}:chats`), "new_message", {
+      pusherServer.trigger(toPusherKey(`user:${friendId}:chats`), "new_message", {
       ...message,
       senderImage: sender.image,
       senderName: sender.name,
