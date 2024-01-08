@@ -14,22 +14,20 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const sendMessage = async () => {
-    if (!input) return;
-    setIsLoading(true);
+    const sendMessage = async () => {
+      if (!input) return;
+      setIsLoading(true);
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      await axios.post("/api/message/send", { text: input, chatId });
-      setInput("");
-      textareaRef.current?.focus();
-    } catch (error) {
-      console.log(error)
-      toast.error("something went wrong. please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      try {
+        await axios.post("/api/message/send", { text: input, chatId });
+        setInput("");
+        textareaRef.current?.focus();
+      } catch {
+        toast.error("Something went wrong. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
   return (
     <div className="border-t border-gray-200 px-4 pt-4 mb-2 sm:mb-0">

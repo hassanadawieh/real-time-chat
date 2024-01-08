@@ -52,13 +52,13 @@ export async function POST(req: Request) {
     const message = messageValidator.parse(messageData);
 
     // notify all connected chat room clients
-    pusherServer.trigger(
+    await pusherServer.trigger(
       toPusherKey(`chat:${chatId}`),
       "incoming_message",
       message
     );
     console.log("message , from the server");
-    pusherServer.trigger(toPusherKey(`user:${friendId}:chats`), "new_message", {
+    await pusherServer.trigger(toPusherKey(`user:${friendId}:chats`), "new_message", {
       ...message,
       senderImage: sender.image,
       senderName: sender.name,
