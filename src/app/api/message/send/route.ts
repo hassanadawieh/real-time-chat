@@ -45,34 +45,37 @@ export async function POST(req: Request) {
       id: nanoid(),
       senderId: session.user.id,
       text,
-      receiverId : friendId,
+      receiverId: friendId,
       timestamp,
     };
 
-    const message = messageValidator.parse(messageData)
+    const message = messageValidator.parse(messageData);
 
     // notify all connected chat room clients
-     await pusherServer.trigger(toPusherKey(`chat:${chatId}`), 'incoming_message' , message)
-    console.log("message , from the server")
-     await pusherServer.trigger(toPusherKey(`user:${friendId}:chats`) , 'new_message',{
-      ...message, 
-      senderImage : sender.image,
-      senderName : sender.name,
-
-    })
+    pusherServer.trigger(
+      toPusherKey(`chat:${chatId}`),
+      "incoming_message",
+      message
+    );
+    console.log("message , from the server");
+    pusherServer.trigger(toPusherKey(`user:${friendId}:chats`), "new_message", {
+      ...message,
+      senderImage: sender.image,
+      senderName: sender.name,
+    });
 
     // all valid, send the message
     await db.zadd(`chat:${chatId}:messages`, {
       score: timestamp,
       member: JSON.stringify(message),
     });
-    return new Response('OK')
+    return new Response("OK");
   } catch (error) {
-    console.log(error , "from the server")
-    if(error instanceof Error){
-        return new Response(error.message , {status : 500})
+    console.log(error, "from the server");
+    if (error instanceof Error) {
+      return new Response(error.message, { status: 500 });
     }
-    return new Response('Internal server error' , {status:500})
+    return new Response("Internal server error", { status: 500 });
   }
 }
 export const revalidate = 0;
