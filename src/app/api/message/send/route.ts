@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     });
     return new Response('OK')
   } catch (error) {
-    console.log(error)
+    console.log(error , "from the server")
     if(error instanceof Error){
         return new Response(error.message , {status : 500})
     }
