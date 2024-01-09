@@ -14,24 +14,25 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-    const sendMessage = async () => {
-      if (!input) return;
-      setIsLoading(true);
+  const sendMessage = async () => {
+    if (!input) return;
+    setIsLoading(true);
 
-      try {
-        await axios.post("/api/message/send", { text: input, chatId });
-        setInput("");
-        textareaRef.current?.focus();
-      } catch {
-        toast.error("Something went wrong. Please try again later.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await axios.post("/api/message/send", { text: input, chatId });
+      setInput("");
+      textareaRef.current?.focus();
+    } catch (error) {
+      toast.error("something went wrong. please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="border-t border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
-      <div className="relative flex-1 overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
+    <div className=" flex border-t border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
+      <div className="relative mr-2  py-[0.15rem] flex-1 overflow-visible rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
         <TextareaAutosize
           ref={textareaRef}
           onKeyDown={(event) => {
@@ -44,25 +45,26 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId }) => {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder={`Message ${chatPartner.name}`}
-          className="block w-full resize-none border-0 bg-transparent text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:py-1.5 text-sm leading-6"
+          className="block w-full  resize-none border-0 bg-transparent text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:py-1.5 text-sm leading-6"
         />
         <div
           onClick={() => textareaRef.current?.focus()}
-          className="py-2"
+          className="py-0"
           aria-hidden="true"
         >
-          <div className="py-px">
+          {/* <div className="py-px">
             <div className="h-9"></div>
-          </div>
-          <div className="absolute right-0 bottom-0 flex justify-between  py-2 pl-3 pr-2">
-            <div className="flex-shrink-0">
-              <Button isLoading={isLoading} onClick={sendMessage} type="submit">
-                Post
-              </Button>
-            </div>
+          </div> */}
+        </div>
+
+      </div>        
+      <div className="flex justify-between">
+          <div className="flex-shrink-0">
+            <Button isLoading={isLoading} onClick={sendMessage} type="submit">
+              Post
+            </Button>
           </div>
         </div>
-      </div>
     </div>
   );
 };
