@@ -57,18 +57,18 @@ const Messages: FC<MessagesProps> = ({
           messages[index - 1]?.senderId === messages[index].senderId;
 
         return (
-          <div className="chat-message py-2" key={`${msg.id}-${msg.timestamp}`}>
+          <div className="chat-message pb-1 " key={`${msg.id}-${msg.timestamp}`}>
             <div
               className={cn("flex items-end", {
-                "justify-end mt-1": isCurrentUser,
+                "justify-end ": isCurrentUser,
               })}
             >
               <div
                 className={cn(
-                  "flex flex-col space-y-2 text-base max-w-xs mx-2",
+                  "flex flex-col text-base max-w-xs mx-2",
                   {
                     "order-1 items-end ": isCurrentUser,
-                    "order-2 items-start mt-1": !isCurrentUser,
+                    "order-2 items-start": !isCurrentUser,
                   }
                 )}
               >
@@ -77,7 +77,7 @@ const Messages: FC<MessagesProps> = ({
                     "bg-indigo-600 text-white": isCurrentUser,
                     "bg-gray-200 text-gray-900": !isCurrentUser,
                     "rounded-br-none":
-                      !hasNextMessageFromSameUser && !isCurrentUser,
+                      !hasNextMessageFromSameUser && isCurrentUser,
                     "rounded-bl-none":
                       !hasNextMessageFromSameUser && !isCurrentUser,
                   })}
